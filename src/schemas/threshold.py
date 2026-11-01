@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-class Threshold(BaseModel):
+class ThresholdResponse(BaseModel):
     tshld_id: int
     aml_scenario_id : str 
     tshld_name : str 

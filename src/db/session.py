@@ -67,6 +67,16 @@ event_engine = create_engine(
     pool_recycle=1800
 )
 
+aml_cust_engine = create_engine(
+    url=create_db_url(
+        'CUST_DB_NAME',
+        'AML_DB_USER',
+        'AML_DB_PASSWORD'
+    ),
+    pool_pre_ping=True,
+    pool_recycle=1800
+)
+
 CaseSessionLocal = sessionmaker(
     bind=case_engine,
     autoflush=False,
@@ -81,6 +91,12 @@ CaseCustSessionLocal = sessionmaker(
 
 AmlSessionLocal = sessionmaker(
     bind=aml_engine,
+    autoflush=False,
+    expire_on_commit=False
+)
+
+AmlCustSessionLocal = sessionmaker(
+    bind=aml_cust_engine,
     autoflush=False,
     expire_on_commit=False
 )
@@ -115,6 +131,13 @@ def get_event_db() -> Generator[Session, None, None]:
 
 def get_aml_db() -> Generator[Session, None, None]:
     db = AmlSessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+def get_aml_cust_db() -> Generator[Session, None, None]:
+    db = AmlCustSessionLocal()
     try:
         yield db
     finally:
